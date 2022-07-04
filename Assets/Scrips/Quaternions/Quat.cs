@@ -4,17 +4,6 @@ using UnityEngine;
 
 namespace CustomMath
 {
-    //Quaternion Multiply(Quaternion a, Quaternion b)
-    //{
-    //    Quaternion result;
-    //    result.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-    //    result.x = (a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y);
-    //    result.y = (a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x);
-    //    result.z = (a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w);
-
-    //    return result;
-    //}
-
     public struct Quat //: IEquatable<Quat>, IFormattable
     {
 
@@ -91,6 +80,11 @@ namespace CustomMath
 
         public static Quat Slerp(Quat a, Quat b, float t)
         {
+            return SlerpUnclamped(a, b, Mathf.Clamp01(t));
+        }
+
+        public static Quat SlerpUnclamped(Quat a, Quat b, float t)
+        {
             Quat r;
 
             float time = 1 - t;
@@ -106,7 +100,7 @@ namespace CustomMath
 
             sn = Mathf.Sin(theta); //En caso de ser mayor, se calcula el seno
 
-            wa = Mathf.Sin(time * theta) / sn;  
+            wa = Mathf.Sin(time * theta) / sn;
             wb = Mathf.Sin((1 - time) * theta) / sn;
 
             r.x = wa * a.x + wb * b.x;
@@ -117,11 +111,6 @@ namespace CustomMath
             r.Normalize();
 
             return r;
-        }
-
-        public static Quat SlerpUnclamped(Quat a, Quat b, float t)
-        {
-            return SlerpUnclamped(a, b, Mathf.Clamp01(t));
         }
 
         public static Quat Lerp(Quat a, Quat b, float t)
@@ -189,11 +178,11 @@ namespace CustomMath
 
         public static Vec3 operator *(Quat rotation, Vec3 point)
         {
-            float rotX = rotation.x * 2f;  //rotX
+            float rotX = rotation.x * 2f; //rotX
             float rotY = rotation.y * 2f; //rotY
             float rotZ = rotation.z * 2f; //rotZ
 
-            float rotX2 = rotation.x * rotX;  //rotX2
+            float rotX2 = rotation.x * rotX; //rotX2
             float rotY2 = rotation.y * rotY; //rotY2
             float rotZ2 = rotation.z * rotZ; //rotZ2
 
@@ -201,7 +190,7 @@ namespace CustomMath
             float rotXZ = rotation.x * rotZ; //rotXZ
             float rotYZ = rotation.y * rotZ; //rotYZ
 
-            float rotWX = rotation.w * rotX;   //rotWX
+            float rotWX = rotation.w * rotX;  //rotWX
             float rotWY = rotation.w * rotY;  //rotWY
             float rotWZ = rotation.w * rotZ;  //rotWZ
 
@@ -210,7 +199,8 @@ namespace CustomMath
             result.x = (1f - (rotY2 + rotZ2)) * point.x + (rotXY - rotWZ) * point.y + (rotXZ + rotWY) * point.z;
             result.y = (rotXY + rotWZ) * point.x + (1f - (rotX2 + rotZ2)) * point.y + (rotYZ - rotWX) * point.z;
             result.z = (rotXZ - rotWY) * point.x + (rotYZ + rotWX) * point.y + (1f - (rotX2 + rotY2)) * point.z;
-            return result;
+
+            return result; //Se calcula el vector Unitario
         }
 
         public static bool operator ==(Quat lhs, Quat rhs)
@@ -225,7 +215,7 @@ namespace CustomMath
 
         private static bool IsEqualUsingDot(float dot)
         {
-            return dot > 0.999999f;
+            return dot > 0.999999f; //Si da 1 es que son paralelos (iguales).
         }
 
         public static implicit operator Quaternion(Quat quat)
@@ -274,6 +264,7 @@ namespace CustomMath
             angles.x = Mathf.Atan2(sinr_cosp, cosr_cosp);
 
             float sinp = 2 * (quat.w * quat.y - quat.z * quat.x);
+
             if (Mathf.Abs(sinp) >= 1)
             {
                 angles.y = (Mathf.PI / 2) * Mathf.Sign(sinp); 
@@ -288,12 +279,13 @@ namespace CustomMath
             angles.z = (float)Mathf.Atan2(siny_cosp, cosy_cosp);
 
             return angles;
+
         } //Ok
 
         private static Quat ToQuaternion(Vec3 vec3)
         {
-            float cosZ = Mathf.Cos(Mathf.Deg2Rad * vec3.z * .5f);
-            float senZ = Mathf.Sin(Mathf.Deg2Rad * vec3.z * .5f);
+            float cosZ = Mathf.Cos(Mathf.Deg2Rad * vec3.z * .5f); //Real
+            float senZ = Mathf.Sin(Mathf.Deg2Rad * vec3.z * .5f); //Imaginaria
             float cosY = Mathf.Cos(Mathf.Deg2Rad * vec3.y * .5f);
             float senY = Mathf.Sin(Mathf.Deg2Rad * vec3.y * .5f);
             float cosX = Mathf.Cos(Mathf.Deg2Rad * vec3.x * .5f);
@@ -301,7 +293,7 @@ namespace CustomMath
 
             Quat quat = new Quat();
 
-            quat.w = cosX * cosY * cosZ + senX * senY * senZ;
+            quat.w = cosX * cosY * cosZ + senX * senY * senZ; 
             quat.x = senX * cosY * cosZ - cosX * senY * senZ;
             quat.y = cosX * senY * cosZ + senX * cosY * senZ;
             quat.z = cosX * cosY * senZ - senX * senY * cosZ;

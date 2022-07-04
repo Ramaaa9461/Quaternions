@@ -74,7 +74,6 @@ public class Ejercicios : MonoBehaviour
                 ShowVector("V3");
                 ShowVector("V4");
 
-
                 vec1 = Quat.Euler(new Vec3(angle, angle, 0)) * vec1;
                 vec3 = Quat.Euler(new Vec3(-angle, -angle, 0)) * vec3;
 

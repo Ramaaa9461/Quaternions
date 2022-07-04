@@ -184,6 +184,7 @@ namespace UnityEngine
             result.m31 = lhs.m30 * rhs.m01 + lhs.m31 * rhs.m11 + lhs.m32 * rhs.m21 + lhs.m33 * rhs.m31;
             result.m32 = lhs.m30 * rhs.m02 + lhs.m31 * rhs.m12 + lhs.m32 * rhs.m22 + lhs.m33 * rhs.m32;
             result.m33 = lhs.m30 * rhs.m03 + lhs.m31 * rhs.m13 + lhs.m32 * rhs.m23 + lhs.m33 * rhs.m33;
+
             return result;
         }
 
@@ -221,17 +222,21 @@ namespace UnityEngine
         #endregion
 
         #region Functions
+
         private Quaternion GetRotation() 
         {
             Quat xr = new Quat(1, Mathf.Cos(m11) - Mathf.Sin(m12), Mathf.Sin(m21) + Mathf.Cos(m22), 1);
             Quat yr = new Quat(Mathf.Cos(m00) + Mathf.Sin(m02), 1, -Mathf.Sin(m20) + Mathf.Cos(m22), 1);
             Quat zr = new Quat(Mathf.Cos(m00) - Mathf.Sin(m01), Mathf.Sin(m10) + Mathf.Cos(m11), 1, 1);
+
             return xr * yr * zr;
         }
+
         private Vector3 GetLossyScale()
         {
             return new Vec3(m00, m11, m22);
         }
+
         public static Matriz4x4 TRS(Vector3 pos, Quaternion rot, Vector3 scal) 
         {
             Matriz4x4 t = Matriz4x4.Translate(pos);
@@ -249,18 +254,22 @@ namespace UnityEngine
             result.m01 = 0f;
             result.m02 = 0f;
             result.m03 = 0f;
+
             result.m10 = 0f;
             result.m11 = vector.y;
             result.m12 = 0f;
             result.m13 = 0f;
+
             result.m20 = 0f;
             result.m21 = 0f;
             result.m22 = vector.z;
             result.m23 = 0f;
+
             result.m30 = 0f;
             result.m31 = 0f;
             result.m32 = 0f;
             result.m33 = 1f;
+
             return result;
         }
         public static Matriz4x4 Translate(Vector3 vector)
@@ -271,18 +280,22 @@ namespace UnityEngine
             result.m01 = 0f;
             result.m02 = 0f;
             result.m03 = vector.x;
+
             result.m10 = 0f;
             result.m11 = 1f;
             result.m12 = 0f;
             result.m13 = vector.y;
+
             result.m20 = 0f;
             result.m21 = 0f;
             result.m22 = 1f;
             result.m23 = vector.z;
+            
             result.m30 = 0f;
             result.m31 = 0f;
             result.m32 = 0f;
             result.m33 = 1f;
+
             return result;
         }
         public static Matriz4x4 Rotate(Quaternion q)
